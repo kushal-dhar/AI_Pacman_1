@@ -333,7 +333,7 @@ class CornersProblem(search.SearchProblem):
             hitsWall = self.walls[nextx][nexty]
 
             if not hitsWall :
-                successors.append((((nextx,nexty), []), action, self.getCostOfActions([action])))
+                successors.append((((nextx,nexty), self.coveredCorners), action, self.getCostOfActions([action])))
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
