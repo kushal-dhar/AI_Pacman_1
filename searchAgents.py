@@ -332,6 +332,11 @@ class CornersProblem(search.SearchProblem):
             nextx, nexty = int(x + dx), int(y + dy)
             hitsWall = self.walls[nextx][nexty]
 
+            if((x,y) in self.corners):
+                print "I found food ****************"
+                print (x,y)
+                print self.corners
+
             if not hitsWall :
                 successors.append((((nextx,nexty), self.coveredCorners), action, self.getCostOfActions([action])))
 
