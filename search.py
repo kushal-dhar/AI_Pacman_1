@@ -86,7 +86,6 @@ def depthFirstSearch(problem):
     print "Is the start a goal?", problem.isGoalState(problem.getStartState())
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
-    "*** YOUR CODE HERE ***"
 
     initState = problem.getStartState()
     fringe = util.Stack()
@@ -96,30 +95,29 @@ def depthFirstSearch(problem):
         return []
 
     fringe.push((initState, []))
-    visited.append(initState)
 
     while(not fringe.isEmpty()):
         currNode = fringe.pop()
         nodeCoor = currNode[0]
         nodePath = currNode[1]
 
-        if(problem.isGoalState(nodeCoor)):
-            return nodePath
+        if nodeCoor not in visited:
 
-        adjacentNodes = problem.getSuccessors(nodeCoor)
+            visited.append(nodeCoor)
 
-        for node in adjacentNodes:
-            nodeCoor = node[0]
-            nodeNextMove = node[1]
-            tempNodePath = list(nodePath)
-            if(nodeCoor not in visited):
+            if(problem.isGoalState(nodeCoor)):
+                return nodePath
+
+            adjacentNodes = problem.getSuccessors(nodeCoor)
+
+            for node in adjacentNodes:
+                nodeCoor = node[0]
+                nodeNextMove = node[1]
+                tempNodePath = list(nodePath)
                 tempNodePath.append(nodeNextMove)
-                visited.append(nodeCoor)
                 fringe.push((nodeCoor, tempNodePath))
 
     return []
-
-    # util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
@@ -141,7 +139,7 @@ def breadthFirstSearch(problem):
         if(problem.isGoalState(nodeCoor)):
             return nodePath
 
-        for node in problem.getSuccessors(nodeCoor):
+        for node in reversed(problem.getSuccessors(nodeCoor)):
             nodeCoor = node[0]
             nodeNextMove = node[1]
             nodeTempPath = list(nodePath)
@@ -153,12 +151,41 @@ def breadthFirstSearch(problem):
 
     return []
 
-    # util.raiseNotDefined()
-
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    initState = problem.getStartState()
+    fringe = util.PriorityQueue()
+    visited = []
+
+    if(problem.isGoalState(initState)):
+        return []
+
+    fringe.push((initState,[], 0), 0)
+
+    while(not fringe.isEmpty()):
+        currNode = fringe.pop()
+        nodeCoor = currNode[0];
+        nodePath = currNode[1];
+        nodeCost = currNode[2];
+
+        if nodeCoor not in visited:
+            visited.append(nodeCoor)
+
+            if(problem.isGoalState(nodeCoor)):
+                return nodePath
+
+            for node in problem.getSuccessors(nodeCoor):
+                nodeCoor = node[0]
+                nodeNextMove = node[1]
+                nodeOprCost = node[2]
+                nodeTempPath = list(nodePath)
+                nodeTempCost = nodeCost
+
+                nodeTempPath.append(nodeNextMove)
+                nodeTempCost += nodeOprCost
+                fringe.push((nodeCoor, nodeTempPath, nodeTempCost), nodeTempCost)
+
+    return []
 
 def nullHeuristic(state, problem=None):
     """
@@ -169,8 +196,40 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    initState = problem.getStartState()
+    fringe = util.PriorityQueue()
+    visited = []
+
+    if (problem.isGoalState(initState)):
+        return []
+
+    fringe.push((initState, [], 0), 0)
+
+    while (not fringe.isEmpty()):
+        currNode = fringe.pop()
+        nodeCoor = currNode[0];
+        nodePath = currNode[1];
+        nodeCost = currNode[2];
+
+        if nodeCoor not in visited:
+            visited.append(nodeCoor)
+
+            if (problem.isGoalState(nodeCoor)):
+                return nodePath
+
+            for node in problem.getSuccessors(nodeCoor):
+                nodeCoor = node[0]
+                nodeNextMove = node[1]
+                nodeOprCost = node[2]
+                nodeTempPath = list(nodePath)
+                nodeTempCost = nodeCost
+
+                nodeTempPath.append(nodeNextMove)
+                nodeTempCost += nodeOprCost
+                nodeTempCostPlusHeuristic = nodeTempCost + heuristic(nodeCoor, problem)
+                fringe.push((nodeCoor, nodeTempPath, nodeTempCost), nodeTempCostPlusHeuristic)
+
+    return []
 
 
 # Abbreviations

@@ -287,7 +287,6 @@ class CornersProblem(search.SearchProblem):
         self._expanded = 0 # DO NOT CHANGE; Number of search nodes expanded
         # Please add any code here which you would like to use
         # in initializing the problem
-        self.coveredCorners = []
 
     def getStartState(self):
         """
@@ -301,12 +300,14 @@ class CornersProblem(search.SearchProblem):
         Returns whether this search state is a goal state of the problem.
         """
         currNode = state[0]
-        if(currNode in self.corners):
-            if(currNode not in self.coveredCorners):
-                self.coveredCorners.append(currNode)
+        eatenFoodCorners = state[1]
+        if currNode in self.corners :
+            if currNode not in eatenFoodCorners :
+                eatenFoodCorners.append(currNode)
 
-        if len(self.corners) == len(self.coveredCorners):
-            return True
+            return len(self.corners) == len(eatenFoodCorners)
+
+        return False
 
     def getSuccessors(self, state):
         """
@@ -328,17 +329,17 @@ class CornersProblem(search.SearchProblem):
             #   nextx, nexty = int(x + dx), int(y + dy)
             #   hitsWall = self.walls[nextx][nexty]
             x,y = state[0]
+            eatenFoodCorners = list(state[1])
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
             hitsWall = self.walls[nextx][nexty]
 
-            if((x,y) in self.corners):
-                print "I found food ****************"
-                print (x,y)
-                print self.corners
-
             if not hitsWall :
-                successors.append((((nextx,nexty), self.coveredCorners), action, self.getCostOfActions([action])))
+                if (nextx, nexty) in self.corners:
+                    if (nextx,nexty) not in eatenFoodCorners:
+                        eatenFoodCorners.append((nextx, nexty))
+
+                successors.append((((nextx,nexty), eatenFoodCorners), action, self.getCostOfActions([action])))
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
