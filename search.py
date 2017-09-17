@@ -139,7 +139,7 @@ def breadthFirstSearch(problem):
         if(problem.isGoalState(nodeCoor)):
             return nodePath
 
-        for node in reversed(problem.getSuccessors(nodeCoor)):
+        for node in problem.getSuccessors(nodeCoor):
             nodeCoor = node[0]
             nodeNextMove = node[1]
             nodeTempPath = list(nodePath)
