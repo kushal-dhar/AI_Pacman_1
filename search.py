@@ -210,12 +210,14 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         nodeCoor = currNode[0];
         nodePath = currNode[1];
         nodeCost = currNode[2];
-
         if nodeCoor not in visited:
             visited.append(nodeCoor)
 
             if (problem.isGoalState(nodeCoor)):
                 return nodePath
+
+            if(nodeCost > 999999):
+                nodeCost -= 999999
 
             for node in problem.getSuccessors(nodeCoor):
                 nodeCoor = node[0]

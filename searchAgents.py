@@ -338,7 +338,7 @@ class CornersProblem(search.SearchProblem):
                 if (nextx, nexty) in self.corners:
                     if (nextx,nexty) not in eatenFoodCorners:
                         eatenFoodCorners.append((nextx, nexty))
-
+                        eatenFoodCorners = sorted(eatenFoodCorners)
                 successors.append((((nextx,nexty), eatenFoodCorners), action, self.getCostOfActions([action])))
 
         self._expanded += 1 # DO NOT CHANGE
@@ -373,6 +373,21 @@ def cornersHeuristic(state, problem):
     """
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
+
+    absDistance = 0
+    x, y = state[0]
+
+    for corner in corners:
+        if(corner not in state[1]):
+            tempDistance = abs(corner[0] - x) + abs(corner[1] - y)
+            if(not absDistance):
+                absDistance = tempDistance
+            else :
+                if(tempDistance > absDistance):
+                    absDistance = tempDistance
+
+
+    return absDistance
 
     "*** YOUR CODE HERE ***"
     return 0 # Default to trivial solution
