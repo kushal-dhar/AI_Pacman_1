@@ -339,7 +339,8 @@ class CornersProblem(search.SearchProblem):
                     if (nextx,nexty) not in eatenFoodCorners:
                         eatenFoodCorners.append((nextx, nexty))
                         eatenFoodCorners = sorted(eatenFoodCorners)
-                successors.append((((nextx,nexty), eatenFoodCorners), action, self.getCostOfActions([action])))
+
+                successors.append((((nextx,nexty), eatenFoodCorners), action, 1))
 
         self._expanded += 1 # DO NOT CHANGE
         return successors

@@ -216,9 +216,6 @@ def aStarSearch(problem, heuristic=nullHeuristic):
             if (problem.isGoalState(nodeCoor)):
                 return nodePath
 
-            if(nodeCost > 999999):
-                nodeCost -= 999999
-
             for node in problem.getSuccessors(nodeCoor):
                 nodeCoor = node[0]
                 nodeNextMove = node[1]
