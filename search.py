@@ -91,25 +91,32 @@ def depthFirstSearch(problem):
     fringe = util.Stack()
     visited = []
 
+    #Checking whether the initial state is goal state
     if(problem.isGoalState(initState)):
         return []
 
     fringe.push((initState, []))
 
+    #iterating through elements in fringe
     while(not fringe.isEmpty()):
         currNode = fringe.pop()
         nodeCoor = currNode[0]
         nodePath = currNode[1]
 
+        #processing node if not visited yet
         if nodeCoor not in visited:
 
             visited.append(nodeCoor)
 
+            #checking whether the current processing is node is goal state or not
             if(problem.isGoalState(nodeCoor)):
                 return nodePath
 
+            #finding all the successors/adjacent nodes
             adjacentNodes = problem.getSuccessors(nodeCoor)
 
+            #fetching next move information
+            #populating fringe
             for node in adjacentNodes:
                 nodeCoor = node[0]
                 nodeNextMove = node[1]
@@ -125,20 +132,25 @@ def breadthFirstSearch(problem):
     fringe = util.Queue()
     visited = []
 
+    #checking if the initstate is goal state
     if(problem.isGoalState(initState)):
         return []
 
     fringe.push((initState,[]))
     visited.append(initState)
 
+    #interating fringe elements till fringe is not empty
     while(not fringe.isEmpty()):
         currNode = fringe.pop()
         nodeCoor = currNode[0];
         nodePath = currNode[1];
 
+        #checking current processed is goal or ot
         if(problem.isGoalState(nodeCoor)):
             return nodePath
 
+        #pushing all the successor nodes of currnet processed node
+        # pushing them to visited node
         for node in problem.getSuccessors(nodeCoor):
             nodeCoor = node[0]
             nodeNextMove = node[1]
@@ -160,6 +172,7 @@ def uniformCostSearch(problem):
     if(problem.isGoalState(initState)):
         return []
 
+    #taking state as position, current traversed path, total cost of that path
     fringe.push((initState,[], 0), 0)
 
     while(not fringe.isEmpty()):
@@ -168,12 +181,15 @@ def uniformCostSearch(problem):
         nodePath = currNode[1];
         nodeCost = currNode[2];
 
+        #Processing the node if not already processed
         if nodeCoor not in visited:
             visited.append(nodeCoor)
 
+            #checking if the current processed node is goal or not
             if(problem.isGoalState(nodeCoor)):
                 return nodePath
 
+            #fetching all the successor of the current processed nodes
             for node in problem.getSuccessors(nodeCoor):
                 nodeCoor = node[0]
                 nodeNextMove = node[1]
@@ -181,6 +197,7 @@ def uniformCostSearch(problem):
                 nodeTempPath = list(nodePath)
                 nodeTempCost = nodeCost
 
+                #calculating the current successor path and path cost to push in fringe
                 nodeTempPath.append(nodeNextMove)
                 nodeTempCost += nodeOprCost
                 fringe.push((nodeCoor, nodeTempPath, nodeTempCost), nodeTempCost)
@@ -203,6 +220,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     if (problem.isGoalState(initState)):
         return []
 
+    #node item pushing in fringe is ((position, corners eaten), path list, path cost)
     fringe.push((initState, [], 0), 0)
 
     while (not fringe.isEmpty()):
@@ -213,6 +231,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         if nodeCoor not in visited:
             visited.append(nodeCoor)
 
+            #checking if popped out node is goal or not
             if (problem.isGoalState(nodeCoor)):
                 return nodePath
 
@@ -221,10 +240,13 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                 nodeNextMove = node[1]
                 nodeOprCost = node[2]
                 nodeTempPath = list(nodePath)
-                nodeTempCost = nodeCost
 
+                #Appending the current move to node path
+                #Calculating the path cost
+                #Calculating the total path cost by including heuristic cost as well
+                #Pushing item to fringe
                 nodeTempPath.append(nodeNextMove)
-                nodeTempCost += nodeOprCost
+                nodeTempCost = problem.getCostOfActions(nodeTempPath);
                 nodeTempCostPlusHeuristic = nodeTempCost + heuristic(nodeCoor, problem)
                 fringe.push((nodeCoor, nodeTempPath, nodeTempCost), nodeTempCostPlusHeuristic)
 

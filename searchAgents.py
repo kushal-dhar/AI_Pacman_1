@@ -301,6 +301,9 @@ class CornersProblem(search.SearchProblem):
         """
         currNode = state[0]
         eatenFoodCorners = state[1]
+
+        #Adding eaten food corenrs in a list and checking if the
+        #length of the eaten food corners is equal to total corners
         if currNode in self.corners :
             if currNode not in eatenFoodCorners :
                 eatenFoodCorners.append(currNode)
@@ -322,24 +325,23 @@ class CornersProblem(search.SearchProblem):
 
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
-            # Add a successor state to the successor list if the action is legal
-            # Here's a code snippet for figuring out whether a new position hits a wall:
-            #   x,y = currentPosition
-            #   dx, dy = Actions.directionToVector(action)
-            #   nextx, nexty = int(x + dx), int(y + dy)
-            #   hitsWall = self.walls[nextx][nexty]
+            #getting the next move
             x,y = state[0]
             eatenFoodCorners = list(state[1])
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
+            #checking if the next move is valid or not by checking whether
+            # it is wall or not
             hitsWall = self.walls[nextx][nexty]
 
             if not hitsWall :
+                #checking if the next move is corner
                 if (nextx, nexty) in self.corners:
                     if (nextx,nexty) not in eatenFoodCorners:
                         eatenFoodCorners.append((nextx, nexty))
                         eatenFoodCorners = sorted(eatenFoodCorners)
 
+                #adding valid next moves to successors list
                 successors.append((((nextx,nexty), eatenFoodCorners), action, 1))
 
         self._expanded += 1 # DO NOT CHANGE
@@ -372,26 +374,41 @@ def cornersHeuristic(state, problem):
     shortest path from the state to a goal of the problem; i.e.  it should be
     admissible (as well as consistent).
     """
-    corners = problem.corners # These are the corner coordinates
-    walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
+    position = state[0]
+    visited_corners = state[1]
+    remaining_corners = []
+    minim = 0
 
-    absDistance = 0
-    x, y = state[0]
+    #Getting all the remaining corners
+    for pos in problem.corners:
+        if pos not in visited_corners:
+            remaining_corners.append(pos)
 
-    for corner in corners:
-        if(corner not in state[1]):
-            tempDistance = abs(corner[0] - x) + abs(corner[1] - y)
-            if(not absDistance):
-                absDistance = tempDistance
-            else :
-                if(tempDistance > absDistance):
-                    absDistance = tempDistance
+    #In this we will find the minumum path to eat all the remaining corners
+    #we will see which is the closes corner from the position and
+    # from closest corner which is the nearest corner thus calculating the
+    #shortest path to cover all the corners in minimum distance
+    while (len(remaining_corners) > 0):
+        local_min = 0
+        location = remaining_corners[0]
+        #finding the closest corner from the current postion
+        for pos in remaining_corners:
+            val = util.manhattanDistance(position, pos)
+            if not local_min:
+                local_min = val
+                location = pos
+            elif val < local_min:
+                local_min = val
+                location = pos
 
+        #adding the cost to path cost
+        #making the closest corner position for next iteration
+        minim += local_min
+        position = location
+        remaining_corners.remove(position)
 
-    return absDistance
+    return minim
 
-    "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -484,8 +501,23 @@ def foodHeuristic(state, problem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
-    "*** YOUR CODE HERE ***"
-    return 0
+    # corners = problem.corners  # These are the corner coordinates
+    # walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
+    x, y = state[0]
+    min = 0
+    i = 0
+    for row in foodGrid:
+        j = 0
+        for col in row:
+            if foodGrid[i][j] == True:
+                val = abs(x - i) + abs(y - j)
+                if (not min):
+                    min = val
+                if (val > min):
+                    min = val
+            j += 1
+        i += 1
+    return min
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
