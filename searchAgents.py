@@ -500,24 +500,38 @@ def foodHeuristic(state, problem):
     Subsequent calls to this heuristic can access
     problem.heuristicInfo['wallCount']
     """
+
     position, foodGrid = state
-    # corners = problem.corners  # These are the corner coordinates
-    # walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
-    x, y = state[0]
-    min = 0
-    i = 0
-    for row in foodGrid:
-        j = 0
-        for col in row:
-            if foodGrid[i][j] == True:
-                val = abs(x - i) + abs(y - j)
-                if (not min):
-                    min = val
-                if (val > min):
-                    min = val
-            j += 1
-        i += 1
-    return min
+    foods = foodGrid.asList()
+    farthestFoodInfo = ((0,0),(0,0),0)
+    heuristicCost = 0
+
+    #return if no food is left to eat
+    if len(foods) == 0:
+        return 0
+
+
+    # Here we are identifying two food nodes which are farthest among all the foods present
+    # ((first food), (second food), distance between them)
+    for each_food in foods:
+        for other_food in foods:
+            if(each_food == other_food):
+                continue
+            else:
+                distance = util.manhattanDistance(each_food, other_food)
+                if farthestFoodInfo[2] < distance :
+                    farthestFoodInfo = (each_food, other_food, distance)
+
+    #if we dont find any two such food with distance greater than 0
+    if(farthestFoodInfo[2] == 0):
+        heuristicCost = util.manhattanDistance(position, foods[0])
+    else:
+        first_distance = util.manhattanDistance(position, farthestFoodInfo[0])
+        second_distance = util.manhattanDistance(position, farthestFoodInfo[1])
+        #sending max distance between two foods + min distance distance of position to both the foods
+        heuristicCost = farthestFoodInfo[2] + min(first_distance, second_distance)
+
+    return heuristicCost
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
